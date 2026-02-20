@@ -51,9 +51,9 @@ public class ServerRest {
             System.out.println("Porta: " + porta);
             System.out.println();
             System.out.println("Endpoint disponibili:");
-            System.out.println("  - POST: http://localhost:8080/api/roulette/paridispari/post");
-            System.out.println("  - GET:  http://localhost:8080/api/roulette/paridispari/get");
-            System.out.println("  - Info: http://localhost:" + "8080" + "/");
+            System.out.println("  - POST: http://localhost:" + porta + "/api/roulette/paridispari/post");
+            System.out.println("  - GET:  http://localhost:" + porta + "/api/roulette/paridispari/get");
+            System.out.println("  - Info: http://localhost:" + porta + "/");
             System.out.println();
             System.out.println();
             System.out.println("Premi Ctrl+C per fermare il server");
@@ -88,8 +88,8 @@ public class ServerRest {
         info.put("tecnologia", "Java + GSON");
         
         Map<String, String> endpoints = new HashMap<>();
-        endpoints.put("POST", "/api/roulette/paridispari/post");
-        endpoints.put("GET", "/api/roulette/paridispari/get");
+        endpoints.put("POST", "http://localhost:8080/api/roulette/paridispari/post");
+        endpoints.put("GET", "http://localhost:8080/api/roulette/paridispari/get");
         info.put("endpoints", endpoints);
         
         Map<String, String> giocate = new HashMap<>();
