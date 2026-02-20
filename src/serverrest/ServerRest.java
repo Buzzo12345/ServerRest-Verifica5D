@@ -34,7 +34,8 @@ public class ServerRest {
             HttpServer server = HttpServer.create(new InetSocketAddress(porta), 0);
             
             // Registra gli handler per gli endpoint
-           
+            server.createContext("/api/roulette/paridispari/post", new RoulettePostHandler());
+            server.createContext("/api/roulette/paridispari/get", new RouletteGetHandler());
             
             // Endpoint di benvenuto
             server.createContext("/", ServerRest::gestisciBenvenuto);
@@ -71,19 +72,27 @@ public class ServerRest {
      * @throws IOException in caso di errori durante la comunicazione
      */
     private static void gestisciBenvenuto(HttpExchange exchange) throws IOException {
+        if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
+            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+            exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
+            exchange.sendResponseHeaders(204, -1);
+            return;
+        }
+
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         
-        Map info = new HashMap<>();
+        Map<String, Object> info = new HashMap<>();
         info.put("messaggio", "Benvenuto alla Roulette Pari/Dispari API!");
         info.put("versione", "1.0.0");
         info.put("tecnologia", "Java + GSON");
         
-        Map endpoints = new HashMap<>();
+        Map<String, String> endpoints = new HashMap<>();
         endpoints.put("POST", "/api/roulette/paridispari/post");
         endpoints.put("GET", "/api/roulette/paridispari/get");
         info.put("endpoints", endpoints);
         
-        Map giocate = new HashMap<>();
+        Map<String, String> giocate = new HashMap<>();
         giocate.put("pari", "PARI");
         giocate.put("dispari", "DISPARI");
         info.put("giocate_supportate", giocate);
@@ -91,6 +100,7 @@ public class ServerRest {
         String jsonRisposta = gson.toJson(info);
         
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         byte[] bytes = jsonRisposta.getBytes();
         exchange.sendResponseHeaders(200, bytes.length);
         exchange.getResponseBody().write(bytes);

@@ -16,8 +16,8 @@ public class App {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // Configurazione porta DA FARE
-        int porta = 0;
+        // Configurazione porta
+        int porta = 8080;
         if (args.length > 0) {
             try {
                 porta = Integer.parseInt(args[0]);

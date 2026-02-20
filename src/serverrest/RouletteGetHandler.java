@@ -24,7 +24,7 @@ import java.util.Map;
  */
 
 
-public class DaFareGetHandler implements HttpHandler {
+public class RouletteGetHandler implements HttpHandler {
     
     // Istanza Gson configurata per pretty printing
     private final Gson gson = new GsonBuilder()
@@ -33,6 +33,10 @@ public class DaFareGetHandler implements HttpHandler {
     
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
+            inviaNoContentOptions(exchange);
+            return;
+        }
         
         // Verifica che sia una richiesta GET
         if (!exchange.getRequestMethod().equalsIgnoreCase("GET")) {
@@ -47,19 +51,19 @@ public class DaFareGetHandler implements HttpHandler {
             // Validazione parametri
             if (validazioneParametri(parametri)) {
                 inviaErrore(exchange, 400, 
-                    "Parametri mancanti. Necessari: operando1, operando2, operatore");
+                    "Parametri mancanti. Necessari: giocata (PARI o DISPARI) e numero");
                 return;
             }
             
             // Parsing dei valori
-            
+            String giocata = parametri.get("giocata");
+            Integer numero = Integer.parseInt(parametri.get("numero"));
             
             // Esegue la logica di calcolo
-            double risultato = DaFareService.logicaDiCalcolo();
+            Integer risultato = RouletteService.logicaDiCalcolo(giocata, numero);
             
             // Crea l'oggetto risposta
-            RouletteResponse response = new RouletteResponse(
-            );
+            RouletteResponse response = new RouletteResponse(giocata, numero, risultato == 1 ? "Vincita" : "Perdita");
             
             // GSON converte automaticamente l'oggetto Java in JSON
             String jsonRisposta = gson.toJson(response);
@@ -67,7 +71,7 @@ public class DaFareGetHandler implements HttpHandler {
             inviaRisposta(exchange, 200, jsonRisposta);
             
         } catch (NumberFormatException e) {
-            inviaErrore(exchange, 400, "Operandi non validi. Devono essere numeri");
+            inviaErrore(exchange, 400, "Parametro numero non valido. Deve essere un intero");
         } catch (IllegalArgumentException e) {
             inviaErrore(exchange, 400, e.getMessage());
         } catch (Exception e) {
@@ -77,8 +81,14 @@ public class DaFareGetHandler implements HttpHandler {
 
     // Validazione dei parametri (da implementare)
     private boolean validazioneParametri(Map<String, String> parametri) {
-        
-        return false;
+        if (parametri == null) {
+            return true;
+        }
+
+        String giocata = parametri.get("giocata");
+        String numero = parametri.get("numero");
+
+        return giocata == null || giocata.trim().isEmpty() || numero == null || numero.trim().isEmpty();
     }
     
     /**
@@ -137,5 +147,13 @@ public class DaFareGetHandler implements HttpHandler {
         
         String jsonErrore = gson.toJson(errore);
         inviaRisposta(exchange, codice, jsonErrore);
+    }
+
+    private void inviaNoContentOptions(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
+        exchange.sendResponseHeaders(204, -1);
+        exchange.close();
     }
 }

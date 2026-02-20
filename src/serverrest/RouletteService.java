@@ -4,7 +4,6 @@
  */
 package serverrest;
 
-import java.util.Random;
 
 /**
  *
@@ -16,27 +15,23 @@ public class RouletteService {
      * Esegue l'operazione matematica richiesta
      * 
      * @param giocata La giocata effettuata (PARI o DISPARI)
-     * @return 1 se la giocata è vincente, 0 se perdente
+     * @return Il risultato della giocata
      * @throws IllegalArgumentException se la giocata non è valida
      */
-    public static double logicaDiCalcolo(String giocata) 
+    public static Integer logicaDiCalcolo(String giocata, Integer numero) 
             throws IllegalArgumentException {
         
         // Controllo se i parametri passati sono validi
-                if (!parametriValidi(giocata)) {
+                if (!parametriValidi(giocata, numero)) {
             throw new IllegalArgumentException("Parametri non validi");
 
         }
-        
-        // Generazione di un numero random
-        Random rnd = new Random();
-        Integer num = rnd.nextInt(37); // Simula un numero casuale tra 0 e 36
         
         try {
             switch(giocata.toUpperCase()) {
                 case "PARI":
                     // Logica per PARI
-                    if (num % 2 == 0 && num != 0) {
+                    if (numero % 2 == 0 && numero != 0) {
                         return 1; // Vincita
                     } else {
                         return 0; // Perdita
@@ -44,7 +39,7 @@ public class RouletteService {
                     
                 case "DISPARI":
                     // Logica per DISPARI
-                    if (num % 2 == 1 && num != 0) {
+                    if (numero % 2 == 1 && numero != 0) {
                         return 1; // Vincita
                     } else {
                         return 0; // Perdita
@@ -61,10 +56,15 @@ public class RouletteService {
     }
 
     // Metodo di validazione dei parametri
-    private static boolean parametriValidi(String giocata) {
+    private static boolean parametriValidi(String giocata, Integer numero) {
         if (giocata == null || giocata.trim().isEmpty()) {
             return false;
         }
+
+        if (numero == null || numero < 0 || numero > 36) {
+            return false;
+        }
+
         return true;
     }
 }

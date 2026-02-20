@@ -26,7 +26,7 @@ import java.util.Map;
  */
 
 
-public class DaFarePostHandler implements HttpHandler {
+public class RoulettePostHandler implements HttpHandler {
     
     // Istanza Gson configurata per pretty printing
     private final Gson gson = new GsonBuilder()
@@ -35,6 +35,10 @@ public class DaFarePostHandler implements HttpHandler {
     
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
+            inviaNoContentOptions(exchange);
+            return;
+        }
         
         // Verifica che sia una richiesta POST
         if (!exchange.getRequestMethod().equalsIgnoreCase("POST")) {
@@ -59,16 +63,17 @@ public class DaFarePostHandler implements HttpHandler {
             }
             
             if (validazioneParametri(request)) {
-                inviaErrore(exchange, 400, "Operatore mancante o vuoto");
+                inviaErrore(exchange, 400, "Parametri mancanti o non validi. Necessari: giocata e numero");
                 return;
             }
             
-            // Chiama la logica di calcolo DA FARE
-            String risultato = calcolaRisultato(request);
+            // Chiama la logica di calcolo
+            Integer risultato = RouletteService.logicaDiCalcolo(request.getGiocata(), request.getNumero());
            
             
-            // Crea l'oggetto risposta DA FARE
-           RouletteResponse response = new RouletteResponse(
+            // Crea l'oggetto risposta
+            RouletteResponse response = new RouletteResponse(
+                request.getGiocata(), request.getNumero(), risultato == 1 ? "Vincita" : "Perdita"
             );
             
             // GSON converte automaticamente l'oggetto Java in JSON
@@ -87,8 +92,11 @@ public class DaFarePostHandler implements HttpHandler {
     
     // Validazione dei parametri (da implementare)
     private boolean validazioneParametri(RouletteRequest request) {
-        
-        return false;
+        if (request.getGiocata() == null || request.getGiocata().trim().isEmpty()) {
+            return true;
+        }
+
+        return request.getNumero() == null;
     }
 
     /**
@@ -114,11 +122,19 @@ public class DaFarePostHandler implements HttpHandler {
     private void inviaErrore(HttpExchange exchange, int codice, String messaggio) 
             throws IOException {
         
-        Map errore = new HashMap<>();
+        Map<String, Object> errore = new HashMap<>();
         errore.put("errore", messaggio);
         errore.put("status", codice);
         
         String jsonErrore = gson.toJson(errore);
         inviaRisposta(exchange, codice, jsonErrore);
+    }
+
+    private void inviaNoContentOptions(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "POST, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
+        exchange.sendResponseHeaders(204, -1);
+        exchange.close();
     }
 }
