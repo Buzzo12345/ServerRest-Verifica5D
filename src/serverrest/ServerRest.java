@@ -50,9 +50,9 @@ public class ServerRest {
             System.out.println("Porta: " + porta);
             System.out.println();
             System.out.println("Endpoint disponibili:");
-            System.out.println("  - POST: http://localhost:" + porta + "/DA FARE");
-            System.out.println("  - GET:  http://localhost:" + porta + "/DA FARE");
-            System.out.println("  - Info: http://localhost:" + porta + "/");
+            System.out.println("  - POST: http://localhost:8080/api/roulette/paridispari/post");
+            System.out.println("  - GET:  http://localhost:8080/api/roulette/paridispari/get");
+            System.out.println("  - Info: http://localhost:" + "8080" + "/");
             System.out.println();
             System.out.println();
             System.out.println("Premi Ctrl+C per fermare il server");

@@ -7,11 +7,14 @@
 </head>
 <body>
     <h1>Roulette</h1>
-    <p>Benvenuto alla roulette! Scegli un numero da 0 a 36 e prova a vincere!</p>
+    <p>Benvenuto alla roulette! Scegli La tua Giocata!</p>
     <form id="rouletteForm">
-        <label for="number">Scegli un numero:</label>
-        <input type="number" id="number" name="number" min="1" max="36" required>
-        <button type="submit">Gira la ruota</button>
+        <label for="giocata">Scegli:</label>
+        <select id="giocata" name="giocata">
+            <option value="pari">Pari</option>
+            <option value="dispari">Dispari</option>
+        </select>
+        <button type="submit">Gira la roulette</button>
     </form>
     <p id="result"></p>
 
