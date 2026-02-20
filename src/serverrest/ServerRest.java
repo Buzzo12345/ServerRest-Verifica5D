@@ -74,21 +74,19 @@ public class ServerRest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         
         Map info = new HashMap<>();
-        info.put("messaggio", "Benvenuto alla Calcolatrice REST API");
-        info.put("versione", "2.0.0");
+        info.put("messaggio", "Benvenuto alla Roulette Pari/Dispari API!");
+        info.put("versione", "1.0.0");
         info.put("tecnologia", "Java + GSON");
         
         Map endpoints = new HashMap<>();
-        endpoints.put("POST", "/api/calcola/post");
-        endpoints.put("GET", "/api/calcola/get?operando1=X&operando2=Y&operatore=OP");
+        endpoints.put("POST", "/api/roulette/paridispari/post");
+        endpoints.put("GET", "/api/roulette/paridispari/get");
         info.put("endpoints", endpoints);
         
-        Map operatori = new HashMap<>();
-        operatori.put("somma", "SOMMA o +");
-        operatori.put("sottrazione", "SOTTRAZIONE o -");
-        operatori.put("moltiplicazione", "MOLTIPLICAZIONE o * o X");
-        operatori.put("divisione", "DIVISIONE o /");
-        info.put("operatori_supportati", operatori);
+        Map giocate = new HashMap<>();
+        giocate.put("pari", "PARI");
+        giocate.put("dispari", "DISPARI");
+        info.put("giocate_supportate", giocate);
         
         String jsonRisposta = gson.toJson(info);
         
