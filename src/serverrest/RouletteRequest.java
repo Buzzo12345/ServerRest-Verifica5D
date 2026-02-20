@@ -12,6 +12,7 @@ public class RouletteRequest {
     
     private String giocata;
     private Integer numero;
+    
     // Costruttore vuoto necessario per GSON
     public RouletteRequest() {
     }
